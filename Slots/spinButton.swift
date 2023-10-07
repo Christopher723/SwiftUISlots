@@ -11,6 +11,7 @@ struct SpinButton: View {
     @Binding var isSpinning: Bool
     @Binding var cardSelect: [Int]
     @Binding var credits: Int
+    @Binding var showAlert: Bool
     
     var weights = [2, 2, 1, 1, 3]
     
@@ -39,39 +40,46 @@ struct SpinButton: View {
         var body: some View {
             
             Button(action: {
-                if !isSpinning {
-                    isSpinning = true
-                    
-                    // Run the spinning animation multiple times
-                    let numberOfSpins = 12 // You can change this to the desired number
-                    var spinCount = 0
-                    
-                    Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
-                        // Update each card's symbol individually
-                        for i in 0..<self.cardSelect.count {
-                            let newCardSelect = selectWeightedRandomIndex()
-                            self.cardSelect[i] = newCardSelect
-                        }
+                if credits > 0{
+                    credits -= 5
+                    if !isSpinning {
+                        isSpinning = true
                         
-                        spinCount += 1
+                        // Run the spinning animation multiple times
+                        let numberOfSpins = 12 // You can change this to the desired number
+                        var spinCount = 0
                         
-                        if spinCount >= numberOfSpins {
-                            // Stop spinning animation after specified spins
-                            timer.invalidate()
-                            isSpinning = false
-                            //Winning lines Logic
+                        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
+                            // Update each card's symbol individually
+                            for i in 0..<self.cardSelect.count {
+                                let newCardSelect = selectWeightedRandomIndex()
+                                self.cardSelect[i] = newCardSelect
+                            }
                             
-                            if cardSelect[0] == cardSelect[1] && cardSelect[1] == cardSelect[2]{
-                                let winningSymbol = cardSelect[0]
-                                credits += 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol])) }
-                            if cardSelect[3] == cardSelect[4] && cardSelect[4] == cardSelect[5]{
-                                let winningSymbol = cardSelect[3]
-                                credits += 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol])) }
-                            if cardSelect[6] == cardSelect[7] && cardSelect[7] == cardSelect[8]{
-                                let winningSymbol = cardSelect[6]
-                                credits += 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol])) }
+                            spinCount += 1
+                            
+                            if spinCount >= numberOfSpins {
+                                // Stop spinning animation after specified spins
+                                timer.invalidate()
+                                isSpinning = false
+                                //Winning lines Logic
+                                
+                                if cardSelect[0] == cardSelect[1] && cardSelect[1] == cardSelect[2]{
+                                    let winningSymbol = cardSelect[0]
+                                    credits += 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol])) }
+                                if cardSelect[3] == cardSelect[4] && cardSelect[4] == cardSelect[5]{
+                                    let winningSymbol = cardSelect[3]
+                                    credits += 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol])) }
+                                if cardSelect[6] == cardSelect[7] && cardSelect[7] == cardSelect[8]{
+                                    let winningSymbol = cardSelect[6]
+                                    credits += 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol])) }
+                            }
                         }
+                        
                     }
+                }
+                else{
+                    showAlert.toggle()
                     
                 }
             }) {
@@ -83,6 +91,7 @@ struct SpinButton: View {
                     .background(Color.red)
                     .cornerRadius(20)
             }
+            .disabled(isSpinning)
         }
     }
 

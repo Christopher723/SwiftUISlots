@@ -15,7 +15,8 @@ struct ContentView: View {
                              0, 0, 0]
     @State var isSpinning = false
     
-    @State var credits = 15
+    @State var credits = 100
+    @State var showAlert = false
     
     init() {
             // Initialize the cardSelect array with random values
@@ -69,14 +70,24 @@ struct ContentView: View {
                         
                 }
                 Spacer().frame(height:40)
-                SpinButton(isSpinning: $isSpinning, cardSelect: $cardSelect, credits: $credits)
+                SpinButton(isSpinning: $isSpinning, cardSelect: $cardSelect, credits: $credits, showAlert: $showAlert)
                 Spacer()
                 
                 
             }
             
         }
-        
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("NO MONEY")
+                    .font(.system(size: 20)),
+                message: Text("You ran out of money? Want to buy more credits?"),
+                dismissButton: .default(Text("YEA"), action: {
+                            credits+=100
+                        }))
+
+            
+        }
         
     }
 }
