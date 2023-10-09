@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     var cards = ["apple", "lemon","diamond", "seven", "bar"]
-    
+    @State var creditWin = 0
     @State var cardSelect = [0, 0, 0,
                              0, 0, 0,
                              0, 0, 0]
@@ -70,25 +70,21 @@ struct ContentView: View {
                         
                 }
                 Spacer().frame(height:40)
-                SpinButton(isSpinning: $isSpinning, cardSelect: $cardSelect, credits: $credits, showAlert: $showAlert)
+                SpinButton(isSpinning: $isSpinning, cardSelect: $cardSelect, credits: $credits, showAlert: $showAlert, creditWin: $creditWin)
+                
                 Spacer()
                 
                 
             }
             
-        }
-        .alert(isPresented: $showAlert) {
+            
+        }.alert(isPresented: $showAlert) {
             Alert(
-                title: Text("NO MONEY")
+                title: Text("WINNER, you won \(creditWin) credits")
                     .font(.system(size: 20)),
-                message: Text("You ran out of money? Want to buy more credits?"),
-                dismissButton: .default(Text("YEA"), action: {
-                            credits+=100
-                        }))
-
+                dismissButton: .default(Text("dismiss")))
             
         }
-        
     }
 }
 
