@@ -7,16 +7,24 @@
 
 import SwiftUI
 
+enum ActiveAlert: Identifiable {
+    case first, second
+    
+    var id: Int {
+        hashValue
+    }
+}
+
 struct ContentView: View {
     var cards = ["apple", "lemon","diamond", "seven", "bar"]
-    @State var creditWin = 0
+    @State var creditWin = 100
     @State var cardSelect = [0, 0, 0,
                              0, 0, 0,
                              0, 0, 0]
     @State var isSpinning = false
-    
-    @State var credits = 100
-    @State var showAlert = false
+    @State var activeAlert: ActiveAlert?
+    @State var credits = 0
+ 
     
     init() {
             // Initialize the cardSelect array with random values
@@ -70,7 +78,7 @@ struct ContentView: View {
                         
                 }
                 Spacer().frame(height:40)
-                SpinButton(isSpinning: $isSpinning, cardSelect: $cardSelect, credits: $credits, showAlert: $showAlert, creditWin: $creditWin)
+                SpinButton(isSpinning: $isSpinning, cardSelect: $cardSelect, credits: $credits, activeAlert: $activeAlert, creditWin: $creditWin)
                 
                 Spacer()
                 
@@ -78,13 +86,26 @@ struct ContentView: View {
             }
             
             
-        }.alert(isPresented: $showAlert) {
-            Alert(
-                title: Text("WINNER, you won \(creditWin) credits")
-                    .font(.system(size: 20)),
-                dismissButton: .default(Text("dismiss")))
-            
+        }.alert(item: $activeAlert) { item in
+            switch item {
+            case .first:
+                Alert(
+                    title: Text("WINNER, you won \(creditWin) credits")
+                        .font(.system(size: 20)),
+                    dismissButton: .default(Text("dismiss")))
+            case .second:
+                Alert(
+                    title: Text("NO MONEY")
+                        .font(.system(size: 20)),
+                    message: Text("You ran out of money? Want to buy more credits?"),
+                    dismissButton: .default(Text("YEA"), action: {
+                        credits+=100
+                    }))
+                
+                
+            }
         }
+        
     }
 }
 

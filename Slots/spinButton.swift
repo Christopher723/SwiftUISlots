@@ -11,7 +11,7 @@ struct SpinButton: View {
     @Binding var isSpinning: Bool
     @Binding var cardSelect: [Int]
     @Binding var credits: Int
-    @Binding var showAlert: Bool
+    @Binding var activeAlert: ActiveAlert?
     @Binding var creditWin: Int
     
     var weights = [2, 2, 1, 1, 3]
@@ -33,82 +33,74 @@ struct SpinButton: View {
         }
         
         return 0
-}
+    }
+    
+    
+    
+    
+    var body: some View {
         
-        
-        
-        
-        var body: some View {
-            
-            Button(action: {
-                if credits > 0{
-                    credits -= 5
-                    if !isSpinning {
-                        isSpinning = true
-                        
-                        // Run the spinning animation multiple times
-                        let numberOfSpins = 12 // You can change this to the desired number
-                        var spinCount = 0
-                        
-                        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
-                            // Update each card's symbol individually
-                            for i in 0..<self.cardSelect.count {
-                                let newCardSelect = selectWeightedRandomIndex()
-                                self.cardSelect[i] = newCardSelect
-                            }
-                            
-                            spinCount += 1
-                            
-                            if spinCount >= numberOfSpins {
-                                // Stop spinning animation after specified spins
-                                timer.invalidate()
-                                isSpinning = false
-                                //Winning lines Logic
-                                
-                                if cardSelect[0] == cardSelect[1] && cardSelect[1] == cardSelect[2]{
-                                    let winningSymbol = cardSelect[0]
-                                    creditWin = 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol]))
-                                    credits += creditWin
-                                    showAlert.toggle()}
-                                if cardSelect[3] == cardSelect[4] && cardSelect[4] == cardSelect[5]{
-                                    let winningSymbol = cardSelect[3]
-                                    creditWin = 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol]))
-                                    credits += creditWin
-                                    showAlert.toggle()}
-                                if cardSelect[6] == cardSelect[7] && cardSelect[7] == cardSelect[8]{
-                                    let winningSymbol = cardSelect[6]
-                                    creditWin = 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol]))
-                                    credits += creditWin
-                                    showAlert.toggle()}
-                            }
+        Button(action: {
+            if credits > 0{
+                credits -= 5
+                if !isSpinning {
+                    isSpinning = true
+                    
+                    // Run the spinning animation multiple times
+                    let numberOfSpins = 12 // You can change this to the desired number
+                    var spinCount = 0
+                    
+                    Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
+                        // Update each card's symbol individually
+                        for i in 0..<self.cardSelect.count {
+                            let newCardSelect = selectWeightedRandomIndex()
+                            self.cardSelect[i] = newCardSelect
                         }
                         
+                        spinCount += 1
+                        
+                        if spinCount >= numberOfSpins {
+                            // Stop spinning animation after specified spins
+                            timer.invalidate()
+                            isSpinning = false
+                            //Winning lines Logic
+                            
+                            if cardSelect[0] == cardSelect[1] && cardSelect[1] == cardSelect[2]{
+                                let winningSymbol = cardSelect[0]
+                                creditWin = 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol]))
+                                credits += creditWin
+                                activeAlert = .first}
+                            if cardSelect[3] == cardSelect[4] && cardSelect[4] == cardSelect[5]{
+                                let winningSymbol = cardSelect[3]
+                                creditWin = 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol]))
+                                credits += creditWin
+                                activeAlert = .first}
+                            if cardSelect[6] == cardSelect[7] && cardSelect[7] == cardSelect[8]{
+                                let winningSymbol = cardSelect[6]
+                                creditWin = 10 * ((4 - weights[winningSymbol]) * (4 - weights[winningSymbol]))
+                                credits += creditWin
+                                activeAlert = .first}
+                        }
                     }
-                }
-                else{
-                    showAlert.toggle()
                     
                 }
-            }) {
-                Text("Spin")
-                    .font(.system(size: 30))
-                    .frame(width: 200)
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.red)
-                    .cornerRadius(20)
             }
-            
-            .disabled(isSpinning)
-            .alert(isPresented: $showAlert) {
-                Alert(
-                    title: Text("NO MONEY")
-                        .font(.system(size: 20)),
-                    message: Text("You ran out of money? Want to buy more credits?"),
-                    dismissButton: .default(Text("YEA"), action: {
-                        credits+=100
-                    }))
+            else{
+                activeAlert = .second
+                
             }
+        }) {
+            Text("Spin")
+                .font(.system(size: 30))
+                .frame(width: 200)
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.red)
+                .cornerRadius(20)
         }
+        
+        .disabled(isSpinning)
+        
     }
-
+    
+}
